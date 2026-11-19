@@ -1,0 +1,61 @@
+name: Build installer zip
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - Install-Right-Click-New-File.command
+      - instructions.txt
+      - .github/workflows/build-installer.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-installer
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build dist/NewTextFileInstaller.zip
+        run: |
+          set -euo pipefail
+
+          # Stage files inside a NewTextFileInstaller/ folder so unzipping gives
+          # ~/Downloads/NewTextFileInstaller/Install-Right-Click-New-File.command
+          rm -rf stage
+          mkdir -p stage/NewTextFileInstaller dist
+          cp Install-Right-Click-New-File.command stage/NewTextFileInstaller/
+          [ -f instructions.txt ] && cp instructions.txt stage/NewTextFileInstaller/
+
+          # Keep the script runnable after unzipping
+          chmod +x stage/NewTextFileInstaller/Install-Right-Click-New-File.command
+
+          # Fixed timestamps so an unchanged input produces an identical zip
+          # (avoids empty "update zip" commits)
+          export TZ=UTC
+          find stage -exec touch -d '2020-01-01 00:00:00' {} +
+
+          rm -f dist/NewTextFileInstaller.zip
+          (cd stage && zip -X -r ../dist/NewTextFileInstaller.zip NewTextFileInstaller)
+
+          echo "Zip contents:"
+          unzip -l dist/NewTextFileInstaller.zip
+
+      - name: Commit updated zip
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/NewTextFileInstaller.zip
+          if git diff --cached --quiet; then
+            echo "Zip unchanged, nothing to commit."
+          else
+            git commit -m "Rebuild dist/NewTextFileInstaller.zip [skip ci]"
+            git push
+          fi
