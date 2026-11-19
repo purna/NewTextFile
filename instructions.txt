@@ -1,0 +1,74 @@
+NEW TEXT FILE - FINDER RIGHT-CLICK EXTENSION
+=============================================
+ 
+Adds "New Text File" to the right-click menu on empty space in any Finder
+folder. It creates untitled.txt (or untitled 2.txt, untitled 3.txt, ...) in
+that folder and selects it so you can press Return to rename it.
+ 
+ 
+REQUIREMENTS
+------------
+- A Mac running macOS 12 or later
+- Apple's command line tools (the installer prompts for them if missing)
+ 
+ 
+INSTALL
+-------
+1. Save Install-Right-Click-New-File.command somewhere, e.g. Downloads.
+ 
+2. Open Terminal and type:  bash   (then a space)
+   Drag Install-Right-Click-New-File.command from Finder onto the Terminal
+   window, so the full path is filled in, then press Return.
+ 
+   Or, if the file is in Downloads:
+       bash ~/Downloads/Install-Right-Click-New-File.command
+ 
+3. If Terminal says the Swift compiler is not found, click Install in the
+   popup, wait for it to finish, then run the command in step 2 again.
+ 
+4. When the install finishes, an "installed" dialog appears and System
+   Settings opens. Go to:
+       General > Login Items & Extensions > Extensions
+   (or search "Finder extensions") and tick "New Text File".
+ 
+5. Right-click empty space in any Finder folder and choose "New Text File".
+ 
+ 
+IF THE MENU ITEM DOES NOT APPEAR
+--------------------------------
+- Double-check the tick box in step 4.
+- Restart Finder:  killall Finder
+- Log out and back in.
+- Re-run the installer.
+ 
+ 
+UNINSTALL
+---------
+1. Open Terminal and run these two commands:
+ 
+       pluginkit -r ~/Applications/NewTextFile.app/Contents/PlugIns/NewTextFileExt.appex
+       rm -rf ~/Applications/NewTextFile.app
+ 
+2. Restart Finder:
+ 
+       killall Finder
+ 
+The menu item is now gone. Nothing else is installed on your Mac.
+ 
+ 
+CLEAN UP OLD ATTEMPTS (optional)
+--------------------------------
+Earlier versions of this tool that did not work can be removed with:
+ 
+    rm -rf ~/Library/Services/"New Text File.workflow"
+    rm -rf ~/Applications/"New Text File.app"
+ 
+ 
+NOTES
+-----
+- The extension is signed for use on your own Mac only. It will not work if
+  copied to another machine; run the installer there instead.
+- To change the file name or type (for example untitled.md), edit
+  "untitled.txt" and "untitled \(n).txt" in the installer script, then run
+  the installer again.
+ 
